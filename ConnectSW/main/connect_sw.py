@@ -15,4 +15,6 @@ def conSW(switch, cmd_to_execute):
 	ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(cmd_to_execute)
 
 	data = ssh_stdout.readlines()[15:]
+	# worked_data = ['<pre class="tab">'+x+'spaces</pre>' for x in data]
+	# print(worked_data)
 	return data

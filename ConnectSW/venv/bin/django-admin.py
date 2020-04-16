@@ -1,4 +1,4 @@
-#!/home/diogo/Desktop/ConnectSW/venv/bin/python
+#!/home/diogo/Desktop/switches/ConnectSW/venv/bin/python
 from django.core import management
 
 if __name__ == "__main__":

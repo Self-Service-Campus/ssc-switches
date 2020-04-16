@@ -1,4 +1,4 @@
-#!/home/diogo/Desktop/ConnectSW/venv/bin/python
+#!/home/diogo/Desktop/switches/ConnectSW/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

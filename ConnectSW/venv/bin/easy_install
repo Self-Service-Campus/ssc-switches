@@ -1,4 +1,4 @@
-#!/home/diogo/Desktop/ConnectSW/venv/bin/python
+#!/home/diogo/Desktop/switches/ConnectSW/venv/bin/python
 # EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==40.8.0','console_scripts','easy_install'
 __requires__ = 'setuptools==40.8.0'
 import re
