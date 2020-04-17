@@ -10,7 +10,7 @@ def homepage(request):
         return show(request, switch, command)
     params = {
         'switches': ['detiLab-b01-sw01.ua.pt', 'detiLab-b01-sw02.ua.pt', 'detiLab-b02-sw01.ua.pt'],
-        'commands': ['show arp', 'show interfaces status']
+        'commands': ['show arp', 'show interfaces status', 'show version']
     }
     return render(request, 'index.html', params)
 
