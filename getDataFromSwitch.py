@@ -19,6 +19,7 @@ def getPorts(switch, data):
 		if d['Name'] != '':
 			port['name_port'] = d['Name'].replace(' (','')
 		port['state_port'] = d['Status']
+		port['vlan'] = d['Vlan']
 		ports.append(port)
 	return ports
 
@@ -39,6 +40,6 @@ def main(switches):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-s", "--switches", nargs='+', default=[], help="Switches IP address", required=False)
+	parser.add_argument("-s", "--switches", nargs='+', default=[], help="Switches IP address", required=True)
 	args = parser.parse_args()
 	main(args.switches)
