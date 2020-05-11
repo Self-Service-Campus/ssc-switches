@@ -13,16 +13,16 @@
 		- CELERY_RESULT_BACKEND = 'django-db'
 		- CELERY_CACHE_BACKEND = 'django-cache'
 	* Commands:
-		```sh
-		$ pip3 install django-celery-results
-		$ python manage.py migrate django_celery_results
-		```
+```sh
+$ pip3 install django-celery-results
+$ python manage.py migrate django_celery_results
+```
 
 ## Install in VM
 	* Rabbitmq
 	* Celery
 		- Run celery
-			```sh
-			$ celery -A ConnectSW worker -l info
-			```
-		NOTE: IN Production is diferent
+```sh
+$ celery -A ConnectSW worker -l info
+```
+		NOTE: In Production is diferent
