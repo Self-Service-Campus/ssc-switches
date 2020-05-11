@@ -114,9 +114,10 @@ def workData(data):
 
 def main():
 	switch = switches[0]
-	c = 'create_vlan'
-	args = {'inter': 'Fa0/6', 'vlan' : '21'}
-	c = commands_show[0]
+	c = 'change_vlan'
+	args = {'inter': 'Fa0/6', 'vlan' : '22'}
+	#c = commands_show[1]
+	print(c)
 	if c in commands_show:
 		success, data = connectSwitchShow(switch, c)	
 		if success:
