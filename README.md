@@ -7,22 +7,19 @@
 		- ConnectSW/__init_.pt
 		- main/SwitchConnector.py
 		- main/tasks.py
-	* Celery Config: Add to settings.py:
+	* Celery Config -> add to settings.py:
 		- INSTALLED_APPS = ['django_celery_results']
 		- BROKER_URL = 'amqp://guest:**@localhost:5672//'
 		- CELERY_RESULT_BACKEND = 'django-db'
 		- CELERY_CACHE_BACKEND = 'django-cache'
 	* Commands:
-```sh
-$ pip3 install django-celery-results
-$ python manage.py migrate django_celery_results
-```
+		$ pip3 install django-celery-results
+		$ python manage.py migrate django_celery_results
+
 
 ## Install in VM
 	* Rabbitmq
 	* Celery
 		- Run celery
-```sh
-$ celery -A ConnectSW worker -l info
-```
-		NOTE: In Production is diferent
+			$ celery -A ConnectSW worker -l info
+		NOTE: In Production is different
