@@ -5,32 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-    <form action="{%  url 'homepage' %}" method="post">
-        {% csrf_token %}
-        <label for="switch">Choose a switch:</label>
-        <select id="switch" name="switch">
-            {% for switch in switches %}
-                <option value="{{ switch }}">{{ switch }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <br>
-        <label for="command">Choose a command:</label>
-        <select id="command" name="command">
-            {% for command in commands %}
-                <option value="{{ command }}">{{ command }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <br>
-        <label for="command">Choose a sinc:</label>
-        <select id="sinc" name="sinc">
-            <option value="sinc">sinc</option>
-            <option value="assinc">assinc</option>
-        </select>
-        <br>
-        <br>
-        <button type="submit">show</button>
-    </form>
+    <a href="{% url 'runget' %}">runget</a>
+    <br>
+    <br>
+    <a href="{% url 'runpost' %}">runpost</a>
+    <br>
+    <br>
+    <a href="{% url 'loaddata' %}">loaddata</a>
 </body>
 </html>

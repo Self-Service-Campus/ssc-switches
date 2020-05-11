@@ -16,7 +16,7 @@ def runGet(username, password, switch_ip, command):
 @shared_task
 def runPost(username, password, switch_ip, command, args):
     connector = SwitchConnector(logger, username, password, switch_ip, command, args)
-    return connector.runPost
+    return connector.runPost()
 
 
 @shared_task
@@ -28,7 +28,7 @@ def loadDataToDB(username, password, switches_ip):
         if not data['success']:
             return data
         switch = {'id_switch': switch_ip.replace('.ua.pt', ''), 'ip_switch': switch_ip,
-                  'model_switch': data['data']['Model number']}
+                  'model_switch': data['data'][0]['Model number']}
         connector.setCommand('show interfaces status')
         data = connector.runGet()
         if not data['success']:

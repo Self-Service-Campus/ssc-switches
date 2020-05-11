@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="{%  url 'runpost' %}" method="post">
+        {% csrf_token %}
+        <label for="switch">Choose a switch:</label>
+        <select id="switch" name="switch">
+            {% for switch in switches %}
+                <option value="{{ switch }}">{{ switch }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <br>
+        <label for="command">Choose a command:</label>
+        <select id="command" name="command">
+            {% for command in commands %}
+                <option value="{{ command }}">{{ command }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <br>
+        <label for="name">Choose a name:</label>
+        <input id="name" name="name" type="text">
+        <br>
+        <br>
+        <label for="inter">Choose a interface:</label>
+        <input id="inter" name="inter" type="text">
+        <br>
+        <br>
+        <label for="name">Choose a vlan:</label>
+        <input id="vlan" name="vlan" type="text">
+        <br>
+        <br>
+        <button type="submit">show</button>
+    </form>
+</body>
+</html>

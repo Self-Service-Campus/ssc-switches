@@ -7,15 +7,16 @@
 		- ConnectSW/__init_.pt
 		- main/SwitchConnector.py
 		- main/tasks.py
+		- docker-compose.yml
+		- DOCKERFILE -> celery==4.4.2
 	* Celery Config -> add to settings.py:
 		- INSTALLED_APPS = ['django_celery_results']
-		- BROKER_URL = 'amqp://guest:**@localhost:5672//'
-		- CELERY_RESULT_BACKEND = 'django-db'
-		- CELERY_CACHE_BACKEND = 'django-cache'
+		- BROKER_URL = 'amqp://admin:mypass@rabbit:5672'
+		- CELERY_BROKER_URL = BROKER_URL
+		- CELERY_RESULT_BACKEND = BROKER_URL
 	* Commands:
 		$ pip3 install django-celery-results
 		$ python manage.py migrate django_celery_results
-
 
 ## Install in VM
 	* Rabbitmq
