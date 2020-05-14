@@ -21,6 +21,9 @@ RUN pip3 install pipenv
 # install dependencies
 RUN pip3 install -r requirements.txt
 
+EXPOSE 8000
+CMD gunicorn ConnectSW.wsgi -b 0.0.0.0:8000
+
 # BUILD IMAGE
 # docker-compose up --build -d
 

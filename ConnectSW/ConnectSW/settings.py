@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'django_celery_results',
+    'celery'
 ]
 
 MIDDLEWARE = [
@@ -127,16 +128,8 @@ STATICFILES_DIRS = [
 ]
 
 # Celery Config
-BROKER_URL = 'amqp://admin:mypass@rabbit:5672//'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
-
-CELERY = {
-    'BROKER_URL': BROKER_URL,
-    'CELERY_IMPORTS': ('main.tasks', ),
-    'CELERY_TASK_SERIALIZER': 'json',
-    'CELERY_RESULT_SERIALIZER': 'json',
-    'CELERY_ACCEPT_CONTENT': ['json'],
-    'CELERY_RESULT_BACKEND': CELERY_RESULT_BACKEND,
-    'CELERY_CACHE_BACKEND': CELERY_CACHE_BACKEND
-}
+BROKER_URL = 'amqp://admin:mypass@rabbit:5672/'
+CELERY_RESULT_BACKEND = 'amqp://admin:mypass@rabbit:5672/'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
