@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+    # Django web server
+    web:
+        build: .
+        hostname: web
+        command: gunicorn ConnectSW.wsgi:application --bind 0.0.0.0:8000
+        volumes:
+            - ./app:/app
+        ports:
+            - "8000:8000"
+        expose:
+            - "8000"
+        depends_on:
+            - rabbit
+
+    # Celery worker
+    worker:
+        build: .
+        command: celery -A workerCelery worker --loglevel=info
+        volumes:
+            - ./app:/app
+        depends_on:
+            - rabbit
+
+    #  Django app to monitor Celery status
+    flower:
+        hostname: flower
+        image: zoomeranalytics/flower:0.9.1-4.0.2
+        environment:
+            - CELERY_BROKER_URL=ramqp://admin:mypass@rabbit:5672//
+            - FLOWER_PORT=5555
+        ports:
+            - "5555:5555"
+        depends_on:
+            - worker
+
+    # RabbitMQ - queue
+    rabbit:
+        hostname: rabbit
+        image: rabbitmq:3-management
+        environment:
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=mypass
+        ports:
+            - "5672:5672"

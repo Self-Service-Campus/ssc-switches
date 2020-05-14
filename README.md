@@ -8,7 +8,9 @@
 		- main/SwitchConnector.py
 		- main/tasks.py
 		- docker-compose.yml
-		- DOCKERFILE -> celery==4.4.2
+		- DOCKERFILE
+			> celery==4.4.2
+			> paramiko==2.7.1
 	* Celery Config -> add to settings.py:
 		- INSTALLED_APPS = ['django_celery_results']
 		- BROKER_URL = 'amqp://admin:mypass@rabbit:5672'
