@@ -1,31 +1,26 @@
 # pull official base image
-FROM python:3.7
+FROM python:3.8-apine
 
 # set work directory
 RUN mkdir /app
 WORKDIR /app
 
-# Add current directory code to working directory
-ADD . /app/
-
 # set environment variables
+# Impede que o Python grave arquivos pyc no disco
 ENV PYTHONDONTWRITEBYTECODE 1
+# Impede que o Python armazene em buffer stdout e stderr
 ENV PYTHONUNBUFFERED 1
-ENV LANG C.UTF-8
-ENV DEBIAN_FRONTEND=noninteractive
-
-# install environment dependencies
-RUN pip3 install --upgrade pip
-RUN pip3 install pipenv
 
 # install dependencies
-RUN pip3 install -r requirements.txt
+RUN apk update && apk add --virtual build-deps gcc python3-dev musl-dev && apkpip3 install --upgrade pip
+COPY ./requirements.txt /app/requirements.txt
+RUN pip3 --no-cache-dir install -r requirements.txt
 
-EXPOSE 8000
-CMD gunicorn ConnectSW.wsgi -b 0.0.0.0:8000
+# copy entrypoint.sh
+COPY ./entrypoint.sh /app/entrypoint.sh
 
-# BUILD IMAGE
-# docker-compose up --build -d
+# copy project
+COPY . /app/
 
-# Comando Milagroso
-# docker system prune -a -f
+# run entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]

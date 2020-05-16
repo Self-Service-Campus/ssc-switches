@@ -2,28 +2,12 @@ import paramiko
 import re
 import time
 
-POST_COMMANDS = {'create_vlan': ['config t', 'vlan {}', 'name {}', 'end'],
+INSTRUCTIONS = {'create_vlan': ['config t', 'vlan {}', 'end'],
                  'delete_vlan': ['config t', 'no vlan {}', 'end'],
                  'change_vlan': ['config t', 'int {}', 'switchport mode access', 'switch access vlan {}', 'end']}
 
 
-def getPorts(switch, data):
-    try:
-        ports = []
-        for d in data:
-            port = {'id_port': switch.replace('.ua.pt', '') + '_' + d['Port'],
-                    'number_port': d['Port'],
-                    'state_port': d['Status'],
-                    'vlan': d['Vlan']}
-            if d['Name'] != '':
-                port['name_port'] = d['Name'].split(' (')[0]
-            ports.append(port)
-    except Exception as e:
-        return {'success': False, 'error': 'Error to get Ports!'}
-    return {'success': True, 'data': ports}
-
-
-def initialData(data):
+def removeInitialFrame(data):
     try:
         data = data[14:]
         while data[0] == '\r\n':
@@ -34,11 +18,10 @@ def initialData(data):
     return {'success': True, 'data': initial_data}
 
 
-def workData(data):
+def show(data):
     try:
         header = data[0]
-        header = header.replace('\r', '')
-        header = header.replace('\n', '')
+        header = header.replace('\r\n', '')
         start_column = [0]
         for i in range(2, len(header)):
             if header[i - 2] == ' ' and header[i - 1] == ' ' and header[i] != ' ':
@@ -74,7 +57,7 @@ def workData(data):
     return {'success': True, 'data': final_data}
 
 
-def workDataVersion(data):
+def showVersion(data):
     try:
         final_data = {}
         for d in data:
@@ -102,6 +85,58 @@ def workDataVersion(data):
     return {'success': True, 'data': [final_data]}
 
 
+def showInterfaceSwitchPort(data):
+    try:
+        ports = []
+        port = {}
+        for d in data:
+            d = d.replace('\r\n', '')
+            if d == '':
+                ports.append(port)
+                port = {}
+            else:
+                x = d.split(': ')
+                if len(x) == 2:
+                    port[x[0]] = x[1]
+    except Exception as e:
+        return {'success': False, 'error': 'Error to get Ports!'}
+    return {'success': True, 'data': ports}
+
+
+def showPortSecurityInterface(data):
+    try:
+        ports = []
+        port = {}
+        for d in data:
+            d = d.replace('\r\n', '')
+            x = d.split(': ')
+            if len(x) == 2:
+                port[x[0]] = x[1]
+    except Exception as e:
+        return {'success': False, 'error': 'Error to get Ports!'}
+    return {'success': True, 'data': ports}
+
+
+def getCommands(instruction, args):
+    commands = INSTRUCTIONS[instruction]
+    if instruction == 'change_vlan':
+        if 'interface' not in args or 'vlan' not in args:
+            return {'success': False, 'error': 'Missing arguments!'}
+        commands[1] = commands[1].format(args['interface'])
+        commands[3] = commands[3].format(args['vlan'])
+    elif instruction == 'create_vlan':
+        if 'vlan' not in args:
+            return {'success': False, 'error': 'Missing arguments!'}
+        commands[1] = commands[1].format(args['vlan'])
+        if 'name' in args:
+            commands.insert(2, 'name ' + args['name'])
+    elif instruction == 'delete_vlan':
+        if 'vlan' not in args:
+            return {'success': False, 'error': 'Missing arguments!'}
+        commands[1] = commands[1].format(args['vlan'])
+    return {'success': True, 'commands': commands}
+
+
 class SwitchConnector:
     def __init__(self, log, username, password, switch, command, args=None):
         self.ssh = paramiko.SSHClient()
@@ -119,20 +154,24 @@ class SwitchConnector:
     def setArgs(self, args):
         self.args = args
 
-    def runGet(self):
-        data = self.connectSwitchGet()
-        if data['success']:
-            data = initialData(data['data'])
+    def run(self):
+        if self.command in INSTRUCTIONS:
+            data = getCommands(self.command, self.args)
             if data['success']:
-                if self.command == 'show version':
-                    data = workDataVersion(data['data'])
-                else:
-                    data = workData(data['data'])
-        self.log.debug(data)
-        return data
-
-    def runPost(self):
-        data = self.connectSwitchPost()
+                data = self.connectSwitchPost(data['commands'])
+        else:
+            data = self.connectSwitchGet()
+            if data['success']:
+                data = removeInitialFrame(data['data'])
+                if data['success']:
+                    if self.command == 'show version':
+                        data = showVersion(data['data'])
+                    elif self.command == 'show interface switchport':
+                        data = showInterfaceSwitchPort(data['data'])
+                    elif 'show port-security interface' in self.command:
+                        data = showPortSecurityInterface(data['data'])
+                    else:
+                        data = show(data['data'])
         self.log.debug(data)
         return data
 
@@ -150,16 +189,15 @@ class SwitchConnector:
             return {'success': False, 'error': 'Error to connect!'}
         return {'success': True, 'data': data}
 
-    def connectSwitchPost(self):
-        cmd_to_execute = self.editCommands()
+    def connectSwitchPost(self, commands):
         try:
             self.ssh.connect(self.switch, username=self.username, password=self.password, look_for_keys=False,
                              timeout=None)
             try:
                 connection = self.ssh.invoke_shell()
-                for c in cmd_to_execute:
+                for commmand in commands:
                     time.sleep(1)
-                    connection.send(c + '\n')
+                    connection.send(commmand + '\n')
                 time.sleep(1)
             except Exception as e:
                 return {'success': False, 'error': 'Error to execute commands!'}
@@ -167,21 +205,3 @@ class SwitchConnector:
         except Exception as e:
             return False, 'Error to connect!'
         return{'success': True, 'text': 'Success!'}
-
-    def editCommands(self):
-        exec_c = None
-        if self.command == 'change_vlan':
-            exec_c = POST_COMMANDS['change_vlan']
-            exec_c[1] = exec_c[1].format(self.args['inter'])
-            exec_c[3] = exec_c[3].format(self.args['vlan'])
-        elif self.command == 'create_vlan':
-            exec_c = POST_COMMANDS['create_vlan']
-            exec_c[1] = exec_c[1].format(self.args['vlan'])
-            if 'name' in self.args:
-                exec_c[2] = exec_c[2].format(self.args['name'])
-            else:
-                del exec_c[2]
-        elif self.command == 'delete_vlan':
-            exec_c = POST_COMMANDS['delete_vlan']
-            exec_c[1] = exec_c[1].format(self.args['vlan'])
-        return exec_c

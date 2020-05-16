@@ -24,13 +24,13 @@ def runget(request):
             if data['success']:
                 params['data'] = data['data']
             else:
-                params['data'] = data['text']
+                params['data'] = data['error']
         else:
             runGet.delay('root', 'DETi4sw', switch, command)
         return show(request, params)
     params = {
         'switches': ['detiLab-b01-sw01.ua.pt', 'detiLab-b01-sw02.ua.pt', 'detiLab-b02-sw01.ua.pt'],
-        'commands': ['show arp', 'show interfaces status', 'show version']
+        'commands': ['show arp', 'show interfaces status', 'show version', 'show interface switchport']
     }
     return render(request, 'runget.html', params)
 
@@ -39,7 +39,7 @@ def runpost(request):
     if request.method == 'POST':
         switch = request.POST.get('switch')
         command = request.POST.get('command')
-        args = {'inter': request.POST.get('inter'), 'name': request.POST.get('name'), 'vlan': request.POST.get('vlan')}
+        args = {'interface': request.POST.get('inter'), 'name': request.POST.get('name'), 'vlan': request.POST.get('vlan')}
         runPost.delay('root', 'DETi4sw', switch, command, args)
         return show(request, {'data': ['data']})
     params = {

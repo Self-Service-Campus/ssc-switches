@@ -15,17 +15,16 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5hkr-swo-#4i(_#-&8rbfo6-_3v)!x8%x^4iw4!0_-b4io(dg%'
+SECRET_KEY = '5hkr-swo-#4i(_#-&8rbfo6-_3v)!x8%x^4iw4!0_-b4io(dg%'   # os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True    # int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []  # os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -38,8 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
-    'django_celery_results',
-    'celery'
 ]
 
 MIDDLEWARE = [
@@ -120,16 +117,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-MEDIA_URL = os.path.join(BASE_DIR, "media/")
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+
 
 # Celery Config
-BROKER_URL = 'amqp://admin:mypass@rabbit:5672/'
-CELERY_RESULT_BACKEND = 'amqp://admin:mypass@rabbit:5672/'
+CELERY_BROKER_URL = 'amqp://localhost:5672/'    # os.environ.get("CELERY_BROKER", 'amqp://localhost:5672/')
+CELERY_RESULT_BACKEND = 'amqp://localhost:5672/'    # os.environ.get("CELERY_BROKER", 'amqp://localhost:5672/')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

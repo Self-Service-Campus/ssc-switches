@@ -1,49 +1,46 @@
-version: '3.7'
+version: '3.8'
 
 services:
     # Django web server
-    web: &web
-        build:
-            context: .
-            dockerfile: Dockerfile
-        hostname: web
-        command: python3 manager.py runserver 0.0.0.0:8000
+    web:
+        build: .
+        command: gunicorn ConnectSW.wsgi:application -b 0.0.0.0:8000
         volumes:
-            - ./app:/app
+            - .:/app
         ports:
-            - "8000:8000"
+            - 8000:8000
+        env_file:
+            - ./.env.dev
         depends_on:
             - rabbitmq
 
     # Celery worker
     worker:
-        <<: *web
         build: .
-        command: celery -A workerCelery worker --loglevel=info
+        command: celery worker -A workerCelery --loglevel=info
         volumes:
-            - ./app:/app
-        ports: []
+            - .:/app
+        env_file:
+            - ./.env.dev
         depends_on:
+            -  web
             - rabbitmq
 
-    #  Django app to monitor Celery status
+    # Django app to monitor Celery status
     flower:
-        hostname: flower
-        image: zoomeranalytics/flower:0.9.1-4.0.2
-        command: flower --address=0.0.0.0 --port=5555 --broker=amqp://admin:mypass@rabbitmq:5672/
+        build: .
+        command: flower --address=0.0.0.0 --port=5555 --broker=amqp://localhost:5672/
         ports:
-            - "5555:5555"
+            - 5555:5555
+        env_file:
+            - ./.env.dev
         depends_on:
+            - web
+            - rabbitmq
             - worker
 
     # RabbitMQ - queue
     rabbitmq:
-        hostname: rabbitmq
         image: rabbitmq:3-management
-        environment:
-            - RABBITMQ_DEFAULT_USER=admin
-            - RABBITMQ_DEFAULT_PASS=mypass
         ports:
-            - "15672:15672"
-        expose:
-            - "15672"
+            - 5672:5672
