@@ -1,6 +1,0 @@
-Django==3.0.6
-paramiko==2.7.1
-celery==4.4.2
-amqp==2.5.2
-flower==0.9.4
-gunicorn==20.0.4
