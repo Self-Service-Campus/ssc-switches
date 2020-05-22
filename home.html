@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>WORKER</title>
+        <link rel="stylesheet" type="text/css" href="/staticfiles/bulma.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+    </head>
+    <body>
+    <section class="section">
+        <div class="container">
+            <h2 class="title is-2">Tasks</h2>
+            <div class="columns">
+                <button id="getbutton">get data</button>
+                <div class="column">
+                    <label>Choose a switch:</label>
+                    <br>
+                    <br>
+                    <ul>
+                        {% for switch in switches %}
+                            <li>
+                                <label for="{{ switch }}">
+                                    <input type="radio" name="switch" id="{{ switch }}" value="{{ switch }}">{{ switch }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="column">
+                    <label for="switch">Choose a port:</label>
+                    <br>
+                    <br>
+                    {% for switch, ports in switches.items %}
+                        <ul id="ports_{{ switch }}" class="ports" hidden>
+                        {% for port in ports %}
+                            <li>
+                                <label for="{{ port }}_{{ switch }}">
+                                    <input type="radio" name="port" id="{{ port }}_{{ switch }}" value="{{ port }}">{{ port }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+                <div class="column">
+                    <label for="command">Choose a task:</label>
+                    <br>
+                    <br>
+                    <ul id="command">
+                        {% for key, command in commands.items %}
+                            <li><button class="button is-primary" value="{{ key }}">{{ command }}</button></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <h2 class="title is-2">Task Result</h2>
+                <br>
+                <table class="table is-fullwidth">
+                <thead>
+                    <tr id="header"></tr>
+                </thead>
+                    <tbody id="result"></tbody>
+                </table>
+            </div>
+            <div>
+                <h2 class="title is-2">Task Status</h2>
+                <br>
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <script type="text/javascript" src="{% static 'jquery-3.4.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'main.js' %}"></script>
+  </body>
+</html>
